@@ -38,10 +38,12 @@ export async function POST(req: NextRequest) {
     // Save file temporarily
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const tempDir = path.join(process.cwd(), "temp");
-    
-    // Create temp directory if it doesn't exist
-    if (!existsSync(tempDir)) {
+
+    // Smart temp directory selection
+    const tempDir = process.env.VERCEL ? "/tmp" : path.join(process.cwd(), "temp");
+
+    // Only create folder if local
+    if (!process.env.VERCEL && !existsSync(tempDir)) {
       await mkdir(tempDir, { recursive: true });
     }
     
